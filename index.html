@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tea'sTimer - 专为茶道爱好者设计的冲泡助手</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f0fdf4;
+            --text: #1a1a1a;
+            --text-secondary: #666;
+            --accent: #22c55e;
+            --card-bg: rgba(255,255,255,0.85);
+            --border: rgba(0,0,0,0.06);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 25%, #f0fdf4 50%, #d1fae5 75%, #ecfdf5 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' opacity='0.03'%3E%3Cpath fill='%2322c55e' d='M50 10c-5 15-20 25-35 30 15 5 30 15 35 30 5-15 20-25 35-30-15-5-30-15-35-30z'/%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' opacity='0.02'%3E%3Cellipse cx='40' cy='40' rx='30' ry='15' fill='none' stroke='%2322c55e' stroke-width='1'/%3E%3Cellipse cx='40' cy='35' rx='25' ry='12' fill='none' stroke='%2322c55e' stroke-width='1'/%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' opacity='0.025'%3E%3Cpath fill='%2316a34a' d='M30 5c-3 10-12 18-22 22 10 4 19 12 22 22 3-10 12-18 22-22-10-4-19-12-22-22z'/%3E%3C/svg%3E");
+            background-size: 200px 200px, 150px 150px, 180px 180px;
+            background-position: 0 0, 80px 100px, 40px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-icon {
+            width: 96px;
+            height: 96px;
+            border-radius: 22px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            margin-bottom: 32px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin-bottom: 40px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .download-btn img {
+            height: 48px;
+        }
+
+        /* Device Showcase */
+        .device-showcase {
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .phone-frame {
+            position: relative;
+            width: 280px;
+            height: 580px;
+            background: #1a1a1a;
+            border-radius: 44px;
+            padding: 12px;
+            box-shadow:
+                0 50px 100px -20px rgba(0,0,0,0.25),
+                0 30px 60px -30px rgba(0,0,0,0.3),
+                inset 0 0 0 2px rgba(255,255,255,0.1);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 34px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .phone-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 28px;
+            background: #1a1a1a;
+            border-radius: 0 0 18px 18px;
+            z-index: 10;
+        }
+
+        /* Features */
+        .features {
+            padding: 120px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 64px;
+            max-width: 600px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.6;
+            z-index: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.8;
+        }
+
+        .feature-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 绿茶 - 多轮计时 */
+        .feature-card.green-tea::before {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(187, 247, 208, 0.15) 100%);
+        }
+        .feature-card.green-tea::after {
+            content: '🍃';
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 120px;
+            opacity: 0.08;
+            z-index: 0;
+            transform: rotate(-15deg);
+        }
+        .feature-card.green-tea .feature-icon {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        /* 红茶 - 数据统计 */
+        .feature-card.black-tea::before {
+            background: linear-gradient(135deg, rgba(180, 83, 9, 0.06) 0%, rgba(254, 215, 170, 0.12) 100%);
+        }
+        .feature-card.black-tea::after {
+            content: '🫖';
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 120px;
+            opacity: 0.08;
+            z-index: 0;
+            transform: rotate(10deg);
+        }
+        .feature-card.black-tea .feature-icon {
+            background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+        }
+
+        /* 乌龙茶 - 自定义模版 */
+        .feature-card.oolong-tea::before {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(254, 243, 199, 0.12) 100%);
+        }
+        .feature-card.oolong-tea::after {
+            content: '🍵';
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 120px;
+            opacity: 0.08;
+            z-index: 0;
+            transform: rotate(-10deg);
+        }
+        .feature-card.oolong-tea .feature-icon {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        /* 白茶 - 茶叶知识库 */
+        .feature-card.white-tea::before {
+            background: linear-gradient(135deg, rgba(120, 113, 108, 0.04) 0%, rgba(245, 245, 244, 0.15) 100%);
+        }
+        .feature-card.white-tea::after {
+            content: '🌿';
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 120px;
+            opacity: 0.08;
+            z-index: 0;
+            transform: rotate(15deg);
+        }
+        .feature-card.white-tea .feature-icon {
+            background: linear-gradient(135deg, #a8a29e 0%, #78716c 100%);
+        }
+
+        /* 普洱茶 - 多彩主题 */
+        .feature-card.puer-tea::before {
+            background: linear-gradient(135deg, rgba(120, 53, 15, 0.06) 0%, rgba(254, 215, 170, 0.10) 100%);
+        }
+        .feature-card.puer-tea::after {
+            content: '🏺';
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 120px;
+            opacity: 0.08;
+            z-index: 0;
+            transform: rotate(-5deg);
+        }
+        .feature-card.puer-tea .feature-icon {
+            background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+        }
+
+        /* 黄茶 - 智能提醒 */
+        .feature-card.yellow-tea::before {
+            background: linear-gradient(135deg, rgba(202, 138, 4, 0.06) 0%, rgba(254, 249, 195, 0.12) 100%);
+        }
+        .feature-card.yellow-tea::after {
+            content: '🔔';
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 120px;
+            opacity: 0.08;
+            z-index: 0;
+            transform: rotate(10deg);
+        }
+        .feature-card.yellow-tea .feature-icon {
+            background: linear-gradient(135deg, #ca8a04 0%, #a16207 100%);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Screenshots */
+        .screenshots {
+            padding: 80px 0;
+            overflow: hidden;
+        }
+
+        .screenshots-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .screenshot-scroll {
+            display: flex;
+            gap: 20px;
+            padding: 40px 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-snap-type: x mandatory;
+        }
+
+        .screenshot-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .screenshot-item {
+            flex-shrink: 0;
+            width: 260px;
+            scroll-snap-align: center;
+        }
+
+        .screenshot-phone {
+            background: #1a1a1a;
+            border-radius: 36px;
+            padding: 10px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .screenshot-phone:hover {
+            transform: scale(1.02);
+        }
+
+        .screenshot-phone img {
+            width: 100%;
+            border-radius: 28px;
+            display: block;
+        }
+
+        /* Highlights */
+        .highlights {
+            padding: 120px 24px;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .highlights-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 64px;
+        }
+
+        @media (max-width: 700px) {
+            .highlight-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .highlight-item {
+            padding: 24px;
+        }
+
+        .highlight-item svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .highlight-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .highlight-item p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* CTA */
+        .cta {
+            padding: 120px 24px;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 24px;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text);
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .hero {
+                min-height: auto;
+                padding: 100px 24px 60px;
+            }
+
+            .phone-frame {
+                width: 240px;
+                height: 500px;
+                border-radius: 36px;
+            }
+
+            .phone-screen {
+                border-radius: 28px;
+            }
+
+            .phone-notch {
+                width: 100px;
+                height: 24px;
+            }
+
+            .features, .highlights, .cta {
+                padding: 80px 24px;
+            }
+
+            .screenshot-item {
+                width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero -->
+    <section class="hero">
+        <img src="appicon.png" alt="Tea'sTimer" class="app-icon">
+        <h1>Tea'sTimer</h1>
+        <p>专为茶道爱好者设计的冲泡助手，让每一泡都恰到好处</p>
+        <a href="#" class="download-btn" onclick="alert('即将上线 App Store，敬请期待！'); return false;">
+            <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+        </a>
+
+        <div class="device-showcase">
+            <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                    <img src="IMG_8410.PNG" alt="Tea'sTimer Screenshot">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <p class="section-label">Features</p>
+        <h2 class="section-title">为泡茶而生的每一个细节</h2>
+
+        <div class="feature-grid">
+            <div class="feature-card green-tea">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/></svg>
+                </div>
+                <h3>多轮计时</h3>
+                <p>支持多轮冲泡，每一泡独立计时，精确掌控茶汤风味</p>
+            </div>
+
+            <div class="feature-card black-tea">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                </div>
+                <h3>数据统计</h3>
+                <p>记录每次泡茶历程，可视化图表追踪你的品茶轨迹</p>
+            </div>
+
+            <div class="feature-card oolong-tea">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg>
+                </div>
+                <h3>自定义模版</h3>
+                <p>为不同茶叶创建专属方案，一键启动心仪的冲泡流程</p>
+            </div>
+
+            <div class="feature-card white-tea">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
+                </div>
+                <h3>茶叶知识库</h3>
+                <p>内置六大茶类冲泡指南，新手也能快速上手</p>
+            </div>
+
+            <div class="feature-card puer-tea">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77c-.28 0-.5.22-.5.5 0 .12.05.23.13.33.41.47.64 1.06.64 1.67A2.5 2.5 0 0 1 12 22zm0-18c-4.41 0-8 3.59-8 8s3.59 8 8 8c.28 0 .5-.22.5-.5a.54.54 0 0 0-.14-.35c-.41-.46-.63-1.05-.63-1.65a2.5 2.5 0 0 1 2.5-2.5H16c2.21 0 4-1.79 4-4 0-3.86-3.59-7-8-7z"/><circle cx="6.5" cy="11.5" r="1.5"/><circle cx="9.5" cy="7.5" r="1.5"/><circle cx="14.5" cy="7.5" r="1.5"/><circle cx="17.5" cy="11.5" r="1.5"/></svg>
+                </div>
+                <h3>多彩主题</h3>
+                <p>多种预设配色方案，支持自定义颜色，打造专属界面</p>
+            </div>
+
+            <div class="feature-card yellow-tea">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1c0-3.87 3.13-7 7-7s7 3.13 7 7v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/></svg>
+                </div>
+                <h3>智能提醒</h3>
+                <p>每轮泡茶完成后声音提醒，后台运行也不会错过</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="screenshots">
+        <div class="screenshots-inner">
+            <p class="section-label">Preview</p>
+            <h2 class="section-title">简洁优雅的界面设计</h2>
+        </div>
+
+        <div class="screenshot-scroll">
+            <div style="width: 24px; flex-shrink: 0;"></div>
+            <div class="screenshot-item">
+                <div class="screenshot-phone">
+                    <img src="IMG_8410.PNG" alt="Screenshot 1">
+                </div>
+            </div>
+            <div class="screenshot-item">
+                <div class="screenshot-phone">
+                    <img src="IMG_8411.PNG" alt="Screenshot 2">
+                </div>
+            </div>
+            <div class="screenshot-item">
+                <div class="screenshot-phone">
+                    <img src="IMG_8412.PNG" alt="Screenshot 3">
+                </div>
+            </div>
+            <div class="screenshot-item">
+                <div class="screenshot-phone">
+                    <img src="IMG_8413.PNG" alt="Screenshot 4">
+                </div>
+            </div>
+            <div class="screenshot-item">
+                <div class="screenshot-phone">
+                    <img src="IMG_8414.PNG" alt="Screenshot 5">
+                </div>
+            </div>
+            <div class="screenshot-item">
+                <div class="screenshot-phone">
+                    <img src="IMG_8415.PNG" alt="Screenshot 6">
+                </div>
+            </div>
+            <div style="width: 24px; flex-shrink: 0;"></div>
+        </div>
+    </section>
+
+    <!-- Highlights -->
+    <section class="highlights">
+        <div class="highlights-inner">
+            <p class="section-label">More</p>
+            <h2 class="section-title">专注品茶体验</h2>
+
+            <div class="highlight-grid">
+                <div class="highlight-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                    <h4>深色模式</h4>
+                    <p>夜间品茶更舒适</p>
+                </div>
+                <div class="highlight-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    <h4>后台运行</h4>
+                    <p>切换应用不中断</p>
+                </div>
+                <div class="highlight-item">
+                    <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    <h4>本地存储</h4>
+                    <p>隐私安全有保障</p>
+                </div>
+                <div class="highlight-item">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM11 5h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    <h4>无广告</h4>
+                    <p>纯净无干扰体验</p>
+                </div>
+                <div class="highlight-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zM4 12c0-4.4 3.6-8 8-8 1.8 0 3.5.6 4.9 1.7L5.7 16.9C4.6 15.5 4 13.8 4 12zm8 8c-1.8 0-3.5-.6-4.9-1.7L18.3 7.1C19.4 8.5 20 10.2 20 12c0 4.4-3.6 8-8 8z"/></svg>
+                    <h4>离线可用</h4>
+                    <p>无需联网即可使用</p>
+                </div>
+                <div class="highlight-item">
+                    <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+                    <h4>小组件</h4>
+                    <p>桌面快捷启动泡茶</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <h2>开始你的品茶之旅</h2>
+        <p>让每一泡茶都恰到好处</p>
+        <a href="#" class="download-btn" onclick="alert('即将上线 App Store，敬请期待！'); return false;">
+            <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store">
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="#" onclick="alert('隐私政策页面建设中'); return false;">隐私政策</a>
+            <a href="#" onclick="alert('用户协议页面建设中'); return false;">用户协议</a>
+            <a href="#" onclick="alert('联系邮箱：contact@example.com'); return false;">联系我们</a>
+        </div>
+        <p class="copyright">© 2026 Tea'sTimer. All rights reserved.</p>
+    </footer>
+</body>
+</html>
